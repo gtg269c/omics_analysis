@@ -5,19 +5,26 @@
 
 import streamlit as st
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+import polars as pl
+import plotly.express as px
+# import matplotlib.pyplot as plt
 
 import duckdb
 
 
-file_paquet = "/home/ec2-user/projects/omics_analysis/scripts/file_tpm_pheno_gene_pqt.parquet"
+file_paquet = "/mnt/d/Research/Omics/Xena/data/file_tpm_pheno_gene_pqt.parquet"
 # query
 query = """
         SELECT tpm, gene, _study, _primary_site
         FROM parquet_scan('{}')
         WHERE gene = 'STT3A' AND _study = 'GTEX'
         """.format(file_paquet)
+
+# query = """
+#         SELECT *
+#         FROM parquet_scan('{}')
+#         LIMIT 10
+#         """.format(file_paquet)
 
 # functions
 
@@ -56,6 +63,11 @@ def render_app(df):
     st.title("Expression analysis")
     st.write("This is a streamlit app for expression analysis")
     st.table(df.head(10))
+    # Create the box plot using Plotly Express
+    fig = px.box(df, x="_primary_site", y="tpm", color="_primary_site")
+    # Display the box plot using Streamlit
+    st.plotly_chart(fig)
+    # st.plotly_chart(fig)
 
 
 # main
@@ -67,7 +79,7 @@ def main():
     df = query_duckdb.get_data(query)
     print(df.head(10))
     # show data
-    # render_app(df)
+    render_app(df.head(10))
 
 
 if __name__ == "__main__":
