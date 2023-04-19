@@ -3,3 +3,7 @@ venv/*
 **/*.parquet
 **/*.csv
 **/*.gz
+**/*.txt
+**/*.tsv
+data/*
+cfn/*
