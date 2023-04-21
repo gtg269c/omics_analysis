@@ -63,16 +63,16 @@ def app():
 
     # get user input
     if st.sidebar:
-        geneid = st.sidebar.text_input("Gene ID", "EGFR")
-        studyid = st.sidebar.multiselect(
-            "Study ID", ["TCGA", "GTEX", "TARGET"])
+        geneid = st.sidebar.text_input("Gene ID", "EGFR").upper()
+        studyid = st.sidebar.selectbox(
+            "Study ID", ("TCGA", "GTEX", "TARGET"))
         submitted = st.sidebar.button("Submit")
 
     # load data
     if submitted:
         print(f"Type of geneid: {type(geneid)}")
         print(f"Type of studyid: {type(studyid)}")
-        df = load_data(file_duckdb, geneid, studyid[0])
+        df = load_data(file_duckdb, geneid, studyid)
 
         # check if data is empty
         if df.empty:
