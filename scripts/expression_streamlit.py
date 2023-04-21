@@ -55,6 +55,42 @@ def load_data(file_db, geneid, studyid):
     return df
 
 
+# class create charts
+class createCharts():
+    def __init__(self, df):
+        self.df = df
+
+    def box_plot(self):
+        fig = px.box(self.df, x="primary_site",
+                     y="tpm", color="primary_site")
+        # Rotate x-axis labels by 90 degrees
+        fig.update_xaxes(tickangle=90)
+        # Set the title as geneid
+        fig.update_layout(title_text=self.df['gene'][0] +
+                          " expression in "+self.df['_study'][0]+" study")
+        return fig
+
+    def scatter_plot(self):
+        fig = px.scatter(self.df, x="primary_site",
+                         y="tpm", color="primary_site")
+        # Rotate x-axis labels by 90 degrees
+        fig.update_xaxes(tickangle=90)
+        # Set the title as geneid
+        fig.update_layout(title_text=self.df['gene'][0] +
+                          " expression in "+self.df['_study'][0]+" study")
+        return fig
+
+    def violin_plot(self):
+        fig = px.violin(self.df, x="primary_site",
+                        y="tpm", color="primary_site")
+        # Rotate x-axis labels by 90 degrees
+        fig.update_xaxes(tickangle=90)
+        # Set the title as geneid
+        fig.update_layout(title_text=self.df['gene'][0] +
+                          " expression in "+self.df['_study'][0]+" study")
+        return fig
+
+
 # App
 def app():
     # title
@@ -68,6 +104,10 @@ def app():
             "Study ID", ("TCGA", "GTEX", "TARGET"))
         submitted = st.sidebar.button("Submit")
 
+    # create tabs
+    tabs = ["Box plot", "Scatter plot", "Violin plot", "Table"]
+    tab1, tab2, tab3, tab4 = st.tabs(tabs)
+
     # load data
     if submitted:
         print(f"Type of geneid: {type(geneid)}")
@@ -78,21 +118,34 @@ def app():
         if df.empty:
             st.write("No data found")
         else:
+            # create charts
+            charts = createCharts(df)
+            # box plot
+            fig_box = charts.box_plot()
+            tab1.plotly_chart(fig_box)
+
+            # scatter plot
+            fig_scatter = charts.scatter_plot()
+            tab2.plotly_chart(fig_scatter)
+
+            # violin plot
+            fig_violin = charts.violin_plot()
+            tab3.plotly_chart(fig_violin)
+
             # show data
-            st.table(df.head(10))
+            tab4.table(df.head(10))
             # Create the box plot using Plotly Express
-            fig = px.box(df, x="primary_site",
-                         y="tpm", color="primary_site")
-            # Rotate x-axis labels by 90 degrees
-            fig.update_xaxes(tickangle=90)
-            # Set the title as geneid
-            fig.update_layout(title_text=df['gene'][0] +
-                              " expression in "+df['_study'][0]+" study")
+
+            # fig = px.box(df, x="primary_site",
+            #              y="tpm", color="primary_site")
+            # # Rotate x-axis labels by 90 degrees
+            # fig.update_xaxes(tickangle=90)
+            # # Set the title as geneid
+            # fig.update_layout(title_text=df['gene'][0] +
+            #                   " expression in "+df['_study'][0]+" study")
 
             # Display the box plot using Streamlit
-            st.plotly_chart(fig)
             # st.plotly_chart(fig)
-
-
+            # st.plotly_chart(fig)
 if __name__ == "__main__":
     app()
